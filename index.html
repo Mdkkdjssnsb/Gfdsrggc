@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPOTIFY</title>
+    <link rel="icon" href="https://i.imgur.com/WQOuW8T.jpeg" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        header img {
+            width: 100px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .form-group input {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        .form-group button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .form-group button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .track-list {
+            list-style: none;
+            padding: 0;
+        }
+        .track-list li {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        .track-list li h3 {
+            margin: 0 0 10px;
+        }
+        .track-list li p {
+            margin: 5px 0;
+        }
+        .track-list li a, .track-list li button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .track-list li a {
+            background-color: #28a745;
+            color: white;
+        }
+        .track-list li button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        footer img {
+            width: 50px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="https://i.imgur.com/WQOuW8T.jpeg" alt="Logo">
+            <h1>SPOTIFY</h1>
+        </header>
+        <div class="form-group">
+            <label for="searchQuery">Search for a song:</label>
+            <input type="text" id="searchQuery" placeholder="Enter song name...">
+            <button id="searchButton" onclick="searchTracks()">Search</button>
+        </div>
+        <ul class="track-list" id="trackList"></ul>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Spotify API. All rights reserved.</p>
+        <p>Powered by <img src="path/to/spotify-logo.png" alt="Spotify"></p>
+    </footer>
+
+    <script>
+        async function searchTracks() {
+            const query = document.getElementById('searchQuery').value;
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+
+            const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
+            const tracks = await response.json();
+
+            const trackList = document.getElementById('trackList');
+            trackList.innerHTML = '';
+
+            tracks.forEach(track => {
+                const trackItem = document.createElement('li');
+                trackItem.innerHTML = `
+                    <h3>${track.name}</h3>
+                    <p>Artists: ${track.artists.join(', ')}</p>
+                    <p>Album: ${track.album}</p>
+                    <p>Release Date: ${track.release_date}</p>
+                    <p>Duration: ${Math.floor(track.duration_ms / 60000)}:${Math.floor((track.duration_ms % 60000) / 1000).toString().padStart(2, '0')}</p>
+                    <p><img src="${track.album ? track.album.images[0].url : 'default-image.png'}" alt="${track.album}" style="width: 100px;"></p>
+                    <a href="${track.external_url}" target="_blank">Listen on Spotify</a>
+                    <button onclick="downloadTrack('${track.name}')">Download</button>
+                `;
+                trackList.appendChild(trackItem);
+            });
+        }
+
+        async function downloadTrack(query) {
+            const response = await fetch(`/download?q=${encodeURIComponent(query)}`);
+            const url = await response.json();
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
