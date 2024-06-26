@@ -27,7 +27,7 @@ async function authenticate() {
 
 // Serve the HTML file
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(__dirname + '/index.html');
 });
 
 // Search for tracks
