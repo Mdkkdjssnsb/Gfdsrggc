@@ -1,5 +1,6 @@
 import express from 'express';
 import fetch from 'node-fetch';
+import path from 'path';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,11 +9,7 @@ const CLIENT_SECRET = '1aae4c1f70314388adffbcf40bd566c0';
 
 // Middleware
 app.use(express.json());
-
-// Serve the HTML file
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Authentication function to get access token
 async function authenticate() {
@@ -27,6 +24,11 @@ async function authenticate() {
     const data = await response.json();
     return data.access_token;
 }
+
+// Serve the HTML file
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Search for tracks
 app.get('/search', async (req, res) => {
@@ -107,7 +109,7 @@ app.get('/download', async (req, res) => {
             return res.status(500).json({ error: 'Unexpected response structure' });
         }
 
-    const url = data.result.download_url;
+        const url = data.result.download_url;
         res.json(url);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
