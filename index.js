@@ -9,6 +9,11 @@ const CLIENT_SECRET = '1aae4c1f70314388adffbcf40bd566c0';
 // Middleware
 app.use(express.json());
 
+// Serve the HTML file
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
 // Authentication function to get access token
 async function authenticate() {
     const response = await fetch('https://accounts.spotify.com/api/token', {
