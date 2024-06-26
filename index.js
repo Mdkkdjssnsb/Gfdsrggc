@@ -7,10 +7,6 @@ const PORT = process.env.PORT || 3000;
 const CLIENT_ID = '9138cee792884c20a60f993fb3175091';
 const CLIENT_SECRET = '1aae4c1f70314388adffbcf40bd566c0';
 
-// Middleware
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-
 // Authentication function to get access token
 async function authenticate() {
     const response = await fetch('https://accounts.spotify.com/api/token', {
