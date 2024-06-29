@@ -1,14 +1,15 @@
-import express from 'express';
-import fetch from 'node-fetch';
-import path from 'path';
+const express = require('express');
+const fetch = require('node-fetch');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const CLIENT_ID = '9138cee792884c20a60f993fb3175091';
 const CLIENT_SECRET = '1aae4c1f70314388adffbcf40bd566c0';
+
 // Serve the HTML file
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Authentication function to get access token
