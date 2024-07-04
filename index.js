@@ -4,8 +4,13 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const CLIENT_ID = '9138cee792884c20a60f993fb3175091';
-const CLIENT_SECRET = '1aae4c1f70314388adffbcf40bd566c0';
+const CLIENT_ID = process.env.CLIENT_ID || '9138cee792884c20a60f993fb3175091';
+const CLIENT_SECRET = process.env.CLIENT_SECRET || '1aae4c1f70314388adffbcf40bd566c0';
+
+if (!CLIENT_ID || !CLIENT_SECRET) {
+    console.error('CLIENT_ID and CLIENT_SECRET must be set');
+    process.exit(1);
+}
 
 // Serve the HTML file
 app.get('/', (req, res) => {
@@ -83,7 +88,7 @@ app.get('/playlist/:playlistId/features', async (req, res) => {
         // Extracting features data
         const features = {
             totalTracks: data.total,
-            totalDuration: data.items.reduce((acc, curr) => acc + curr.track.duration_ms, 0)
+            totalDuration: data.items.reduce((acc, curr) => acc + (curr.track ? curr.track.duration_ms : 0), 0)
         };
         res.json(features);
     } catch (error) {
@@ -101,12 +106,12 @@ app.get('/download', async (req, res) => {
         const response = await fetch(`https://samirxpikachu.onrender.com/spotifydl?url=${encodeURIComponent(q)}`);
         const data = await response.json();
 
-        if (!data.result || !data.result) {
+        if (!data.result) {
             return res.status(500).json({ error: 'Unexpected response structure' });
         }
 
         const url = data.result.download_url;
-        res.json(url);
+        res.json({ url });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
