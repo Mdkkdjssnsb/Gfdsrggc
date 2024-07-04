@@ -98,10 +98,10 @@ app.get('/download', async (req, res) => {
         return res.status(400).json({ error: 'Query parameter "q" is required' });
     }
     try {
-        const response = await fetch(`https://joshweb.click/api/spotify2?q=${encodeURIComponent(q)}`);
+        const response = await fetch(`https://samirxpikachu.onrender.com/spotifydl?url=${encodeURIComponent(q)}`);
         const data = await response.json();
 
-        if (!data.result || !data.result.download_url) {
+        if (!data.result || !data.result) {
             return res.status(500).json({ error: 'Unexpected response structure' });
         }
 
