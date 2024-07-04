@@ -1,5 +1,5 @@
 const express = require('express');
-const fetch = require('node-fetch');
+const axios = require('axios');
 const path = require('path');
 
 const app = express();
@@ -19,16 +19,15 @@ app.get('/', (req, res) => {
 
 // Authentication function to get access token
 async function authenticate() {
-    const response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
+    const response = await axios.post('https://accounts.spotify.com/api/token', new URLSearchParams({
+        grant_type: 'client_credentials'
+    }), {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Basic ' + Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64')
-        },
-        body: 'grant_type=client_credentials'
+        }
     });
-    const data = await response.json();
-    return data.access_token;
+    return response.data.access_token;
 }
 
 // Search for tracks
@@ -39,12 +38,16 @@ app.get('/search', async (req, res) => {
     }
     try {
         const accessToken = await authenticate();
-        const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track`, {
+        const response = await axios.get(`https://api.spotify.com/v1/search`, {
             headers: {
                 'Authorization': 'Bearer ' + accessToken
+            },
+            params: {
+                q: q,
+                type: 'track'
             }
         });
-        const data = await response.json();
+        const data = response.data;
 
         // Check if the data contains the expected structure
         if (!data.tracks || !data.tracks.items) {
@@ -73,12 +76,12 @@ app.get('/playlist/:playlistId/features', async (req, res) => {
     const { playlistId } = req.params;
     try {
         const accessToken = await authenticate();
-        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+        const response = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
             headers: {
                 'Authorization': 'Bearer ' + accessToken
             }
         });
-        const data = await response.json();
+        const data = response.data;
 
         // Check if the data contains the expected structure
         if (!data.items) {
@@ -103,8 +106,12 @@ app.get('/download', async (req, res) => {
         return res.status(400).json({ error: 'Query parameter "q" is required' });
     }
     try {
-        const response = await fetch(`https://samirxpikachu.onrender.com/spotifydl?url=${encodeURIComponent(q)}`);
-        const data = await response.json();
+        const response = await axios.get(`https://samirxpikachu.onrender.com/spotifydl`, {
+            params: {
+                url: q
+            }
+        });
+        const data = response.data;
 
         if (!data.result) {
             return res.status(500).json({ error: 'Unexpected response structure' });
