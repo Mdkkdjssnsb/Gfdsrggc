@@ -113,11 +113,11 @@ app.get('/download', async (req, res) => {
         });
         const data = response.data;
 
-        if (!data.result || !data.result.link) {
+        if (!data|| !data.link) {
             return res.status(500).json({ error: 'Unexpected response structure or missing link' });
         }
 
-        const link = data.result.link;
+        const link = data.link;
 
         res.json({ link });
     } catch (error) {
