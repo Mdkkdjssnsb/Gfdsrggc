@@ -113,12 +113,13 @@ app.get('/download', async (req, res) => {
         });
         const data = response.data;
 
-        if (!data.result) {
-            return res.status(500).json({ error: 'Unexpected response structure' });
+        if (!data.result || !data.result.link) {
+            return res.status(500).json({ error: 'Unexpected response structure or missing link' });
         }
 
-        const url = data.result.download_url;
-        res.json({ url });
+        const link = data.result.link;
+
+        res.json({ link });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
