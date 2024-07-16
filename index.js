@@ -106,7 +106,7 @@ app.get('/download', async (req, res) => {
         return res.status(400).json({ error: 'Query parameter "q" is required' });
     }
     try {
-        const response = await axios.get(`https://samirxpikachu.onrender.com/spotifydl`, {
+        const response = await axios.get(`https://www.samirxpikachu.run.place/spotifydl`, {
             params: {
                 url: q
             }
